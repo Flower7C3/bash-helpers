@@ -1,6 +1,6 @@
-base_dir_path=$(dirname ${BASH_SOURCE})/
+BASH_HELPERS_BASE_DIR_PATH=$(dirname ${BASH_SOURCE})/
 
-sourced_scripts_list=(
+BASH_HELPERS_SOURCED_SCRIPTS_LIST=(
     '_base.sh              _base.sh'
     '_inc_colors.sh        _inc_colors.sh'
     '_inc_io.sh            _inc_io.sh'
@@ -15,10 +15,10 @@ sourced_scripts_list=(
     '_inc_ftp.sh           _inc_ftp.sh'
 )
 
-for i in "${!sourced_scripts_list[@]}"; do
+for i in "${!BASH_HELPERS_SOURCED_SCRIPTS_LIST[@]}"; do
     if [[ "$i" > 0 ]]; then
-        file_info=(${sourced_scripts_list[$i]})
+        file_info=(${BASH_HELPERS_SOURCED_SCRIPTS_LIST[$i]})
         local_file_name=${file_info[0]}
-        source ${base_dir_path}${local_file_name}
+        source ${BASH_HELPERS_BASE_DIR_PATH}${local_file_name}
     fi
 done

@@ -15,19 +15,20 @@ function rgb_to_ansi256() {
             ansi=$((((($r - 8) / 247) * 24) + 232))
         fi
     else
-        local r_index=$(((36 * ($r / 255 * 5))))
-        local g_index=$(((6 * ($g / 255 * 5))))
-        local b_index=$((($b / 255 * 5)))
+        local r_index=$(((36 * ($r * 5 / 255))))
+        local g_index=$(((6 * ($g * 5 / 255))))
+        local b_index=$((($b * 5 / 255)))
         ansi=$((16 + $r_index + $g_index + $b_index))
     fi
-    printf ${ansi%.*}
+    echo -n ${ansi%.*}
 }
 
 function rgb_foreground() {
     local r=$1
     local g=$2
     local b=$3
-    local code=$(rgb_to_ansi256 $r $g $b)
+    local code
+    code=$(rgb_to_ansi256 $r $g $b)
     printf "\033[38;5;%sm" "$code"
 }
 
@@ -35,7 +36,8 @@ function rgb_background() {
     local r=$1
     local g=$2
     local b=$3
-    local code=$(rgb_to_ansi256 $r $g $b)
+    local code
+    code=$(rgb_to_ansi256 $r $g $b)
     printf "\033[48;5;%sm" "$code"
 }
 

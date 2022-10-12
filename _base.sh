@@ -6,9 +6,9 @@ if [[ "$BASH_VERSION" == 0* ]] || [[ "$BASH_VERSION" == 1* ]] || [[ "$BASH_VERSI
     exit 9
 fi
 
-base_dir_path=$(dirname ${BASH_SOURCE})/
+BASH_HELPERS_BASE_DIR_PATH=$(dirname "$BASH_SOURCE")/
 
-sourced_scripts_list=(
+BASH_HELPERS_SOURCED_SCRIPTS_LIST=(
     '_base_for_remote.sh    _base.sh'
     '_colors.sh             _inc_colors.sh'
     '_io.sh                 _inc_io.sh'
@@ -23,10 +23,10 @@ sourced_scripts_list=(
     '_s3.sh                 _inc_s3.sh'
 )
 
-for i in "${!sourced_scripts_list[@]}"; do
+for i in "${!BASH_HELPERS_SOURCED_SCRIPTS_LIST[@]}"; do
     if [[ "$i" > 0 ]]; then
-        file_info=(${sourced_scripts_list[$i]})
+        file_info=(${BASH_HELPERS_SOURCED_SCRIPTS_LIST[$i]})
         local_file_name=${file_info[0]}
-        source "${base_dir_path}${local_file_name}"
+        source "${BASH_HELPERS_BASE_DIR_PATH}${local_file_name}"
     fi
 done

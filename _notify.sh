@@ -5,9 +5,10 @@
 function slack_notify() {
     local service_identifier=$1
     local url="https://hooks.slack.com/services/${service_identifier}"
-    local payload=$(echo "$2" | sed ':a;N;$!ba;s/\n//g')
+    local payload
+    payload=$(echo "$2" | sed ':a;N;$!ba;s/\n//g')
 
-    printf "${COLOR_INFO_B}Send notification to Slack${COLOR_OFF} \n"
+    printf "${COLOR_INFO_B}Send notification to Slack${COLOR_OFF}\n"
     curl -k -X POST --data "payload=${payload}" "$url"
     echo ""
 }
@@ -48,9 +49,10 @@ function slack_notify_project_updated() {
 function msteams_notify() {
     local service_identifier=$1
     local url="https://outlook.office.com/webhook/${service_identifier}"
-    local payload=$(echo "$2" | sed ':a;N;$!ba;s/\n//g')
+    local payload
+    payload=$(echo "$2" | sed ':a;N;$!ba;s/\n//g')
 
-    printf "${COLOR_INFO_B}Send notification to MS Teams${COLOR_OFF} \n"
+    printf "${COLOR_INFO_B}Send notification to MS Teams${COLOR_OFF}\n"
     curl -k -X POST --data "$payload" "$url"
     echo ""
 }

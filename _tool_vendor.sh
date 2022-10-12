@@ -8,12 +8,12 @@ function facebook_cache_clean_by_sitemap() {
     local base_url=${2:-"http://localhost"}
     local sitemap_path=${3:-"/sitemap.xml"}
 
-    printf "${COLOR_INFO_B}Clean facebook cache for ${COLOR_INFO_H}${base_url}${sitemap_path}${COLOR_INFO_B} sitemap ${COLOR_INFO} \n"
-    curl -s ${base_url}${sitemap_path} | egrep -o "${base_url}[^ \"()\<>]*" | while read url; do
+    printf "${COLOR_INFO_B}Clean facebook cache for ${COLOR_INFO_H}%s${COLOR_INFO_B} sitemap ${COLOR_INFO}\n" "${base_url}${sitemap_path}"
+    curl -s "${base_url}${sitemap_path}" | grep -E -o "${base_url}[^ \"()\<>]*" | while read url; do
         if [[ "$url" == *sitemap*.xml ]]; then
-            facebook_cache_clean_by_sitemap ${access_token} ${base_url} ${url/$base_url/}
+            facebook_cache_clean_by_sitemap "$access_token" "$base_url" "${url/$base_url/}"
         else
-            facebook_cache_clean ${access_token} ${url}
+            facebook_cache_clean "$access_token" "$url"
         fi
     done
 }
@@ -23,7 +23,7 @@ function facebook_cache_clean() {
     local access_token=$1
     local url=${2:-"http://localhost"}
 
-    printf "${COLOR_INFO_B}Clean facebook cache for ${COLOR_INFO_H}${url}${COLOR_INFO_B} page${COLOR_OFF} \n"
+    printf "${COLOR_INFO_B}Clean facebook cache for ${COLOR_INFO_H}%s${COLOR_INFO_B} page${COLOR_OFF}\n" "$url"
     curl -s -X POST \
         -F "id=${url}" \
         -F "scrape=true" \

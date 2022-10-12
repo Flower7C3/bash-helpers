@@ -19,7 +19,7 @@ function app_bye() {
 function join_by() {
     local _delimiter=$1
     shift
-    printf "$1"
+    echo -n "$1"
     shift
     printf "%s" "${@/#/$_delimiter}"
 }
@@ -136,7 +136,7 @@ function print_new_line() {
 
 function program_error() {
     print_new_line
-    exit ${1:-'1'}
+    exit "${1:-'1'}"
 }
 
 ###############################################################
@@ -257,7 +257,7 @@ function prompt_variable_not() {
         prompt_variable "$_variable_name" "$_question_text" "$_default_value" "$@"
         _prompt_response=$(eval echo '$'"${_variable_name}")
         if test "$(echo " ${_prohibited_values[*]} " | grep " ${_prompt_response} ")"; then
-            display_error "Wrong ${COLOR_QUESTION_H}${_question_text}${COLOR_ERROR}. Prohibited values are: ${COLOR_ERROR_H}$(join_by '/' ${_prohibited_values[*]})${COLOR_ERROR}!"
+            display_error "Wrong ${COLOR_QUESTION_H}${_question_text}${COLOR_ERROR}. Prohibited values are: ${COLOR_ERROR_H}$(join_by '/' "${_prohibited_values[*]}")${COLOR_ERROR}!"
             set -- "${@:1:1}"
         else
             break
@@ -285,7 +285,7 @@ function prompt_variable_fixed() {
         _question_text2="$_question_text"
         local _args=$#
         if [[ ${_args} -le ${_arg_no} ]]; then
-            _question_text2="$_question_text [$(join_by '/' ${_allowed_values[*]})]"
+            _question_text2="$_question_text [$(join_by '/' "${_allowed_values[*]}")]"
         fi
         _allowed_vals=() # short value with first letter
         for _av in "${_allowed_values[@]}"; do
@@ -310,7 +310,7 @@ function prompt_variable_fixed() {
         if test "$(echo " ${_allowed_values[*]} " | grep " ${_prompt_response} ")"; then
             break
         else
-            display_error "Wrong ${COLOR_ERROR_H}${_question_text}${COLOR_ERROR} value. Allowed is one of: ${COLOR_ERROR_H}$(join_by '/' ${_allowed_values[*]})${COLOR_ERROR}!"
+            display_error "Wrong ${COLOR_ERROR_H}${_question_text}${COLOR_ERROR} value. Allowed is one of: ${COLOR_ERROR_H}$(join_by '/' "${_allowed_values[*]}")${COLOR_ERROR}!"
             set -- "${@:0:0}"
         fi
     done
@@ -348,6 +348,6 @@ function read_variable_from_config() {
     local _config_file_path=$3
     local _default_value=$4
     local _variable_value
-    _variable_value=$(awk -F "=" '/^'$_config_variable_name'/ {print $2}' ${_config_file_path} | sed 's/\"//g' | sed 's/\'"'"'//g' | sed 's/^[ ]*//;s/[ ]*$//' | sed -e 's/\'$'\t//g')
+    _variable_value=$(awk -F "=" '/^'"$_config_variable_name"'/ {print $2}' "$_config_file_path" | sed 's/\"//g' | sed 's/\'"'"'//g' | sed 's/^[ ]*//;s/[ ]*$//' | sed -e 's/\'$'\t//g')
     set_variable "$_bash_variable_name" "$_default_value" "$_variable_value"
 }
