@@ -292,7 +292,7 @@ function prompt_variable_fixed() {
         _question_text2="$_question_text"
         local _args=$#
         if [[ ${_args} -le ${_arg_no} ]]; then
-            _question_text2="$_question_text [$(join_by '/' "${_allowed_values[*]}")]"
+            _question_text2="$_question_text [$(join_by '/' ${_allowed_values[*]})]"
         fi
         _allowed_vals=() # short value with first letter
         for _av in "${_allowed_values[@]}"; do
