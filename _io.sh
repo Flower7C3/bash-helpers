@@ -19,7 +19,7 @@ function app_bye() {
 function join_by() {
     local _delimiter=$1
     shift
-    echo -n "$1"
+    printf "$1"
     shift
     printf "%s" "${@/#/$_delimiter}"
 }
@@ -173,9 +173,10 @@ function display_prompt() {
         display_line "$COLOR_QUESTION" "$ICON_PROMPT" "${_question_text}: ${_input_text}" "$@"
     # or ask user for value
     else
-        _question_text2="${_question_text}: "
-        if [[ -n "${_default_value}" ]]; then
-            _question_text2="${_question_text} (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION}): "
+        if [[ "$_prompt_mode" == "password" ]] && [[ -n "${_default_value}" ]]; then
+            _question_text2="${_question_text} (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION}) » "
+        else
+            _question_text2="${_question_text} » "
         fi
         _prompt_text=$(display_line "$COLOR_QUESTION" "$ICON_PROMPT" "$DISPLAY_LINE_APPEND_NULL" "$_question_text2" "$@")
         _prompt_text=$(echo -e -n "${_prompt_text}${COLOR_CONSOLE}" | fold -s -w128)
@@ -183,9 +184,11 @@ function display_prompt() {
         if [[ "$_prompt_mode" == "password" ]] || [[ "$_prompt_mode" == "repeated" ]]; then
             local _input_value1
             local _input_value2
-            local _question_repeat2="${_question_text} repeat: "
-            if [[ -n "${_default_value}" ]]; then
-                _question_repeat2="${_question_text} repeat (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION}): "
+            local _question_repeat2
+            if [[ "$_prompt_mode" == "password" ]] && [[ -n "${_default_value}" ]]; then
+                _question_repeat2="${_question_text} repeat (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION}) » "
+            else
+                _question_repeat2="${_question_text} repeat » "
             fi
             _prompt_repeat=$(display_line "$COLOR_QUESTION" "$ICON_PROMPT" "$DISPLAY_LINE_APPEND_NULL" "$_question_repeat2" "$@")
             _prompt_repeat=$(echo -e -n "${_prompt_repeat}${COLOR_CONSOLE}" | fold -s -w128)
@@ -194,14 +197,14 @@ function display_prompt() {
                     read -r -p "${_prompt_text}" -s _input_value1
                     printf "\n"
                 else
-                    read -r -p "${_prompt_text}" -e _input_value1
+                    read -r -p "${_prompt_text}" -i "$_default_value" -e _input_value1
                 fi
                 color_reset
                 if [[ "$_prompt_mode" == "password" ]]; then
                     read -r -p "${_prompt_repeat}" -s _input_value2
                     printf "\n"
                 else
-                    read -r -p "${_prompt_repeat}" -e _input_value2
+                    read -r -p "${_prompt_repeat}" -i "$_default_value" -e _input_value2
                 fi
                 color_reset
                 if [[ "$_input_value1" == "$_input_value2" ]]; then
@@ -213,7 +216,7 @@ function display_prompt() {
             done
         elif [[ "$_prompt_mode" == "not_null" ]]; then
             while true; do
-                read -r -p "${_prompt_text}" -e _input_value
+                read -r -p "$_prompt_text" -i "$_default_value" -e _input_value
                 color_reset
                 if [[ "$_input_value" == "" && "$_default_value" == "" ]]; then
                     display_error "Please enter not null value!"
@@ -222,13 +225,17 @@ function display_prompt() {
                 fi
             done
         else
-            read -r -p "${_prompt_text}" -e _input_value
+            read -r -p "${_prompt_text}" -i "$_default_value" -e _input_value
             color_reset
         fi
         # if user set nothing, then set default value
         _variable_value=${_input_value}
     fi
-    set_variable "$_variable_name" "$_default_value" "$_variable_value"
+    if [[ "$_prompt_mode" == "password" ]] && [[ -n "${_default_value}" ]]; then
+        set_variable "$_variable_name" "$_default_value" "$_variable_value"
+    else
+        set_variable "$_variable_name" "$_variable_value"
+    fi
 }
 
 # asks user for variable value
@@ -307,7 +314,7 @@ function prompt_variable_fixed() {
             fi
             _prompt_response=$(eval echo '$'"${_variable_name}")
         fi
-        if test "$(echo " ${_allowed_values[*]} " | grep " ${_prompt_response} ")"; then
+        if test "$(echo " ${_allowed_values[*]} " | grep " ${_prompt_response} ")" && [[ "$_prompt_response" != "" ]]; then
             break
         else
             display_error "Wrong ${COLOR_ERROR_H}${_question_text}${COLOR_ERROR} value. Allowed is one of: ${COLOR_ERROR_H}$(join_by '/' "${_allowed_values[*]}")${COLOR_ERROR}!"
