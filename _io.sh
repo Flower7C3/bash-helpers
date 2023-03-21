@@ -170,13 +170,13 @@ function display_prompt() {
         else
             _input_text=$(echo -e -n "${COLOR_CONSOLE}${_variable_value}")
         fi
-        display_line "$COLOR_QUESTION" "$ICON_PROMPT" "${_question_text}: ${_input_text}" "$@"
+        display_line "$COLOR_QUESTION" "$ICON_PROMPT" "${_question_text}${ICON_INPUT} ${_input_text}" "$@"
     # or ask user for value
     else
         if [[ "$_prompt_mode" == "password" ]] && [[ -n "${_default_value}" ]]; then
-            _question_text2="${_question_text} (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION}) » "
+            _question_text2="${_question_text} (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION})${ICON_INPUT} "
         else
-            _question_text2="${_question_text} » "
+            _question_text2="${_question_text}${ICON_INPUT} "
         fi
         _prompt_text=$(display_line "$COLOR_QUESTION" "$ICON_PROMPT" "$DISPLAY_LINE_APPEND_NULL" "$_question_text2" "$@")
         _prompt_text=$(echo -e -n "${_prompt_text}${COLOR_CONSOLE}" | fold -s -w128)
@@ -186,9 +186,9 @@ function display_prompt() {
             local _input_value2
             local _question_repeat2
             if [[ "$_prompt_mode" == "password" ]] && [[ -n "${_default_value}" ]]; then
-                _question_repeat2="${_question_text} repeat (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION}) » "
+                _question_repeat2="${_question_text} repeat (default: ${COLOR_QUESTION_H}${_default_value}${COLOR_QUESTION})${ICON_INPUT} "
             else
-                _question_repeat2="${_question_text} repeat » "
+                _question_repeat2="${_question_text} repeat${ICON_INPUT} "
             fi
             _prompt_repeat=$(display_line "$COLOR_QUESTION" "$ICON_PROMPT" "$DISPLAY_LINE_APPEND_NULL" "$_question_repeat2" "$@")
             _prompt_repeat=$(echo -e -n "${_prompt_repeat}${COLOR_CONSOLE}" | fold -s -w128)
